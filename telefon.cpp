@@ -1,443 +1,183 @@
+#include<iostream>
+#include<string>
+using namespace std;
 
-#define CRT_SECURE_NO_WARNINGS
-#include <iostream>
-#include <iomanip>
-#include <algorithm>  
+class Telefon 
+{
 
-
-using namespace std;  
-
-   
-   //
-// aplicatie pentru gestionarea telefoanelor mobile
-  //avem functii pentru constructori operatori getteri si setteri operatori de comparare si afisare
-// face si citire de la tastatura pentru a putea introduce datele unui telefon mobil
- //    apoi se testeaza toate functiile implementate in main
-   
-class Telefon
-{  
-
-private: 
-    const int CODUnic;
-     
-    float MemorieTotala;
-    int nrAplicatiiInstalate; 
-    float* MemorieOcupata; 
-
-
-      
-
-    // functie pentru copierea memoriei ocupate
-    static float* copiazaMemorie(const float* memorie, int nr)  
-    {
-        if (nr <= 0 || memorie == NULL)
-            return NULL; 
-
-        float* copie = new float[nr]; 
-         
-        for (int i = 0; i < nr; i++)  
-        {
-            copie[i] = memorie[i];   
-        }
-
-        return copie;
-          
-
-    }  
-
+private:
+	const int CODUnic;
+	float MemorieTotala;
+	int nrAplicatiiInstalate;
+	float* MemorieOcupata;
 public:
-      
-
-
-    // constructor fara parametri pentru celelalte atribute
-    Telefon(const int id) : CODUnic(id)
-    {
-        MemorieTotala = 0;
-        nrAplicatiiInstalate = 0; 
-        MemorieOcupata = NULL;  
-    }
-
-      
-
-    // constructor cu parametri
-    Telefon(const int ID, float mt, int nr, float* mo)
-        : CODUnic(ID)
-    {  
-        MemorieTotala = max(0.0f, mt);
-        nrAplicatiiInstalate = max(0, nr);
-
-        MemorieOcupata = copiazaMemorie(
-            mo, nrAplicatiiInstalate
-        );
-    }
-
-      
-      
-    // constructor de copiere
-    Telefon(const Telefon& t) : CODUnic(t.CODUnic)  
-    {
-        MemorieTotala = t.MemorieTotala;   
-        nrAplicatiiInstalate = t.nrAplicatiiInstalate;  
-
-        MemorieOcupata = copiazaMemorie(   
-            t.MemorieOcupata, 
-            t.nrAplicatiiInstalate   
-        );
-
-
-
-    }  
-
-
-      
-
-    //  =
-    Telefon& operator=(const Telefon& t)  
-
-
-    {
-        if (this != &t)           
-                    
-
-        {               
-
-            float* memorieNoua = copiazaMemorie( 
-                t.MemorieOcupata, 
-                t.nrAplicatiiInstalate
-            ); 
-                   
-
-            delete[] MemorieOcupata; 
-             
-              
-             
-            MemorieTotala = t.MemorieTotala;
-            nrAplicatiiInstalate = t.nrAplicatiiInstalate;        
-            MemorieOcupata = memorieNoua;
-        }
-        
-        return *this;           
-             
-
-          
-    }
-            
-    // Destructor  
-    ~Telefon() 
-    { 
-        delete[] MemorieOcupata; 
-    }
-     
-    // Getteri
-    int getCODUnic() const 
-    { 
-        return CODUnic;
-    }
-     
-       
-    float getMemorieTotala() const
-    {
-        return MemorieTotala;
-    } 
-
-       
-    int getNrAplicatii() const 
-    { 
-        return nrAplicatiiInstalate; 
-    }
-       
-     
-
-    float getMemorieOcupata(int index) const 
-    { 
-        if (index >= 0 && index < nrAplicatiiInstalate) 
-            return MemorieOcupata[index];
-         
-        return -1;  
-    }
-
-
-
-
-	  //setteri
-    void SetMemorieTotala(float mt)    
-    {
-        MemorieTotala = max(0.0f, mt); 
-    } 
-     
-    void SetNrAplicatii(int nr) 
-    {
-        if (nr < 0)
-            nr = 0;
-
-        float* memorieNoua = NULL;
-
-        if (nr > 0)
-        {
-            memorieNoua = new float[nr]();
-
-            int limita = min(nr, nrAplicatiiInstalate);
-
-            for (int i = 0; i < limita; i++)
-            {
-                memorieNoua[i] = MemorieOcupata[i];
-            }
-        }
-
-        delete[] MemorieOcupata;
-
-        MemorieOcupata = memorieNoua;
-        nrAplicatiiInstalate = nr;
-    }
-        
-
-	  // setter pentru memoria ocupata de aplicatii
-    void SetMem(float* newM, int nr)
-    {
-        float* memorieNoua = copiazaMemorie(newM, nr);
-
-        delete[] MemorieOcupata;
-
-        MemorieOcupata = memorieNoua;
-        nrAplicatiiInstalate =
-            (nr > 0 && newM != NULL) ? nr : 0;
-    }
-
-
-
-
-         // operator [] pentru accesarea memoriei unei aplicatii
-    float operator[](int index) const
-    {
-        if (index >= 0 && index < nrAplicatiiInstalate)
-
-            return MemorieOcupata[index];
-
-        return -1;
-    }
-
-
-
-    // operator > pentru compararea memoriei totale
-    bool operator>(const Telefon& t) const
-    {
-        return MemorieTotala > t.MemorieTotala;
-
-
-    }
-
-
-    // operator << pentru afisare
-    friend ostream& operator<<(ostream& iesire, const Telefon& t)
-    {
-
-
-        iesire << "Telefonul cu ID:   " << t.CODUnic
-            << " , memorie totala:   "
-            << fixed << setprecision(2)
-
-            << t.MemorieTotala << " GB"
-
-            << " , numar aplicatii instalate:  "
-
-            << t.nrAplicatiiInstalate
-            << "  , memoria ocupata de aplicatii:  ";
-
-
-		//fac asta pentru ca operatorul << nu poate fi folosit direct pe un pointer 
-        // trebuie sa parcurg vectorul de memorie ocupata pentru a afisa fiecare valoare 
-        for (int i = 0; i < t.nrAplicatiiInstalate; i++)
-
-        {
-            iesire << t.MemorieOcupata[i] << " GB";
-
-            if (i < t.nrAplicatiiInstalate - 1)
-                iesire << ", ";
-        }
-
-
-
-
-        iesire << endl;
-
-
-
-        return iesire;
-    }
-
-
-
-
-    // Operator >> pentru citire
-    friend istream& operator>>(istream& intrare, Telefon& t)
-    {
-        float memorie;
-        int nr;
-
-        cout << "Introdu memoria totala (GB): ";
-        intrare >> memorie;
-
-        if (!intrare)
-            return intrare;
-
-        cout << "Introdu numarul de aplicatii instalate: ";
-        intrare >> nr;
-
-        if (!intrare)
-            return intrare;
-
-
-        if (nr < 0)
-        {
-            intrare.setstate(ios::failbit);
-            return intrare;
-        }
-
-
-
-		// alocare dinamica pentru vect de mem ocp 
-        // se aloca memorie pentru vect de mem ocp
-        float* valori = nr > 0 ? new float[nr] : NULL;
-
-        for (int i = 0; i < nr; i++)
-        {
-            cout << "Memoria ocupata de aplicatia "
-                << i + 1 << " (GB): ";
-
-            intrare >> valori[i];
-
-            if (!intrare)
-            {
-                delete[] valori;
-                return intrare;
-            }
-        }
-
-
-        t.SetMemorieTotala(memorie);
-        t.SetMem(valori, nr);
-
-
-        delete[] valori;
-
-
-        return intrare;
-
-
-    }
-
+	Telefon(const int id) :CODUnic(id)
+ {
+		this->MemorieTotala = 0;
+		this->nrAplicatiiInstalate = 0;
+		this->MemorieOcupata = new float[1];
+		this->MemorieOcupata[0] = NULL;
+
+	}
+
+	Telefon(const int ID, float mt, int nr, float* mo) : CODUnic(ID) {
+		this->MemorieTotala = mt;
+		if (this->MemorieOcupata != NULL) {
+			this->nrAplicatiiInstalate = nr;
+			this->MemorieOcupata = new float[nrAplicatiiInstalate];
+			for (int i = 0; i < nrAplicatiiInstalate; i++) {
+				this->MemorieOcupata[i] = mo[i];
+			}
+		}
+		else {
+			this->nrAplicatiiInstalate = nr;
+			this->MemorieOcupata = NULL;
+		}
+	}
+
+	void SetMem(float* newM, int nr) 
+{
+		if (this->MemorieOcupata != NULL)
+ {
+			delete[]this->MemorieOcupata;
+		}
+		this->nrAplicatiiInstalate = nr;
+		this->MemorieOcupata = new float[nr];
+		for (int i = 0; i < nr; i++) {
+			this->MemorieOcupata[i] = newM[i];
+		}
+		
+	}
+
+
+	Telefon(const Telefon &t) : CODUnic(t.CODUnic) 
+{
+		this->MemorieTotala = t.MemorieTotala;
+		if (this->MemorieOcupata != NULL) {
+			this->nrAplicatiiInstalate = t.nrAplicatiiInstalate;
+			this->MemorieOcupata = new float[nrAplicatiiInstalate];
+			for (int i = 0; i < nrAplicatiiInstalate; i++) {
+				this->MemorieOcupata[i] = t.MemorieOcupata[i];
+			}
+		}
+		else {
+			this->nrAplicatiiInstalate = 0;
+			this->MemorieOcupata = NULL;
+		}
+	}
+
+	~Telefon() {
+		if (this->MemorieOcupata != NULL) {
+			delete[]this->MemorieOcupata;
+		}
+	}
+
+	float getMemorieTotale() {
+		return this->MemorieTotala;
+	}
+
+	int getNrAplicatii() {
+		return this->nrAplicatiiInstalate;
+	}
+
+	Telefon operator=(const Telefon &t)  {
+		delete[]this->MemorieOcupata;
+
+		this->MemorieTotala = t.MemorieTotala;
+		if (this->MemorieOcupata != NULL) {
+			this->nrAplicatiiInstalate = t.nrAplicatiiInstalate;
+			this->MemorieOcupata = new float[nrAplicatiiInstalate];
+			for (int i = 0; i < nrAplicatiiInstalate; i++) {
+				this->MemorieOcupata[i] = t.MemorieOcupata[i];
+			}
+		}
+		else {
+			this->nrAplicatiiInstalate = 0;
+			this->MemorieOcupata = NULL;
+		}
+		return *this;
+	}
+
+	friend ostream& operator<<(ostream&, Telefon);
+	friend istream& operator>>(istream&, Telefon&);
+
+	float operator[](int index) {
+		if (index > 0 && index < nrAplicatiiInstalate) {
+			return this->MemorieOcupata[index];
+		}
+		else {
+			return -1;
+		}
+	}
+
+	bool operator>(Telefon &t) {
+		int t1 = t.MemorieTotala;
+		int t2 = t.MemorieTotala;
+		if (t1 > t2) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
 
 };
 
+istream& operator>>(istream& intrare, Telefon &t) {
+	
+	cout << " introdu mem totala";
+	float mem;
+	intrare >> mem;
+	cout << "total aplicatii";
+	int nr;
+	intrare >> nr;
+	float* array = new float[nr];
+	for (int i = 0; i < nr; i++) {
+		cout << "memorie ocupata pt aplicatie " << i + 1 << ", ";
+		intrare >> array[i];
+	}
+	t.SetMem(array, nr);
+	delete[]array;
+	return intrare;
+
+}
+
+ostream& operator<<(ostream& iesire, Telefon t) {
+	iesire << "telefonul cu id" << t.CODUnic << " are o memorie de " << t.MemorieTotala << " si are " << t.nrAplicatiiInstalate << " aplicatii instalate, care ocupata ";
+	for (int i = 0; i < t.nrAplicatiiInstalate; i++) {
+		iesire <<", " <<t.MemorieOcupata[i] ;
+		
+	}
+	iesire << endl;
+	return iesire;
+}
 
 
+void main()
+ {
+	
+		Telefon t1(100);
+		cout << t1.getMemorieTotale() << endl;
+		cout << t1.getNrAplicatii() << endl;
+		int CODUnic = 100;
+		float array[5] = { 100.09, 60.08, 60, 90, 50 };
+		Telefon t2(100, 1000.00, 5, array);
+		cout << t2.getNrAplicatii()<<endl;
+		Telefon t3(t2);
+		cout << t3.getMemorieTotale() << endl;
+		float array2[2] = { 5.4, 6.8 };
+		Telefon t4(200, 1000, 2, array2);
+		t4 = t2;
+		cout << t4.getNrAplicatii() << endl;
+		cout << t2;
 
-
-
-
-
-int main()
-{
-    // Testare constructor fara parametri pentru aplicatii
-    Telefon t1(100);
-
-    cout << "Primul telefon:" << endl;   
-    cout << t1;
-      
-    cout << "Memorie totala: "
-        << t1.getMemorieTotala() << endl; 
-      
-    cout << "Numar aplicatii: "
-        << t1.getNrAplicatii() << endl; 
-
-
-
-
-    // Testare constructor cu parametri 
-    float array[5] = { 100.09f, 60.08f, 60.0f, 90.0f, 50.0f };     
-
-    Telefon t2(100, 512.0f, 5, array);
-
-    cout << "\nAl doilea telefon:" << endl;
-    cout << t2;
-
-
-    // Testare constructor de copiere 
-    Telefon t3(t2); 
-
-    cout << "\nTelefonul copiat t3:" << endl; 
-    cout << t3;
-       
-
-    // Testare operator =   
-    float array2[2] = { 5.4f, 6.8f }; 
-     
-    Telefon t4(200, 128.0f, 2, array2); 
-     
-    t4 = t2;    
-
-    cout << "\nTelefonul t4 dupa atribuirea t4 = t2:" << endl;  
-    cout << t4;   
-       
-    cout << "Codul unic al lui t4 ramane: " 
-        << t4.getCODUnic() << endl;
-
-       
-    // Testare operator []   
-    cout << "\nMemoria primei aplicatii din t2: "  
-        << t2[0] << " GB" << endl;  
-
-    cout << "Memoria celei de-a doua aplicatii: "   
-        << t2[1] << " GB" << endl;    
-
-
-
-    // Testare operator >  
-    cout << "\nComparare telefoane:" << endl; 
-      
-    if (t2 > t4)   
-        cout << "t2 are memorie totala mai mare decat t4." << endl;  
-    else   
-        cout << "t2 nu are memorie totala mai mare decat t4." << endl;   
-       
-     
-      
-    // Testare setter  
-    t1.SetMemorieTotala(256.0f);   
-
-    float aplicatiiNoi[3] = { 10.5f, 20.0f, 15.5f };  
-      
-    t1.SetMem(aplicatiiNoi, 3);    
-      
-    cout << "\n telefonul t1 dupa modificarea datelor:   " << endl;   
-    cout << t1;  
-
-        
-     
-    // Testare operator >> 
-    Telefon t5(101);  
-
-    cout << "\n  introducere date pentru t5:  " << endl; 
-    cin >> t5;  
-
-    cout << "\n datele telefonului t5:  " << endl;  
-    cout << t5; 
-      
-  
-    return 0; 
-        
-}  
-  
- 
-
- 
- 
- 
-
-
- 
-
-                         
-
-
-  
+		cout << t2[1] << endl;
+		
+		Telefon t5(101);
+		cin >> t5;
+		cout << t5;
+		
+		
+	
+}
